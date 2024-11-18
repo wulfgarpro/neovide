@@ -124,7 +124,7 @@ impl Editor {
     }
 
     fn process_forward_cursor_pos(&mut self) {
-        while let Some(position) = self.forward_cursor_pos.take() {
+        if let Some(position) = self.forward_cursor_pos.take() {
             self.set_cursor_position(position.grid, position.left, position.top);
         }
     }

@@ -34,7 +34,7 @@ pub use window::*;
 
 const MODE_CMDLINE: u64 = 4;
 
-pub struct ForwardCursorPos {
+pub struct PendingCursorPos {
     pub grid: u64,
     pub left: u64,
     pub top: u64,
@@ -93,7 +93,7 @@ impl WindowAnchor {
 pub struct Editor {
     pub windows: HashMap<u64, Window>,
     pub cursor: Cursor,
-    pub forward_cursor_pos: Option<ForwardCursorPos>,
+    pub pending_cursor_pos: Option<PendingCursorPos>,
     pub defined_styles: HashMap<u64, Arc<Style>>,
     pub mode_list: Vec<CursorMode>,
     pub draw_command_batcher: Rc<DrawCommandBatcher>,
@@ -108,7 +108,7 @@ impl Editor {
         Editor {
             windows: HashMap::new(),
             cursor: Cursor::new(),
-            forward_cursor_pos: None,
+            pending_cursor_pos: None,
             defined_styles: HashMap::new(),
             mode_list: Vec::new(),
             draw_command_batcher: Rc::new(DrawCommandBatcher::new()),
@@ -120,11 +120,11 @@ impl Editor {
     }
 
     fn set_forward_cursor_pos(&mut self, grid: u64, left: u64, top: u64) {
-        self.forward_cursor_pos = Some(ForwardCursorPos { grid, left, top });
+        self.pending_cursor_pos = Some(PendingCursorPos { grid, left, top });
     }
 
     fn process_forward_cursor_pos(&mut self) {
-        if let Some(position) = self.forward_cursor_pos.take() {
+        if let Some(position) = self.pending_cursor_pos.take() {
             self.set_cursor_position(position.grid, position.left, position.top);
         }
     }
